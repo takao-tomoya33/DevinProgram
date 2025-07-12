@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京橋1000円ベロベロ居酒屋マップ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <h1>🍻 京橋1000円ベロベロ居酒屋マップ</h1>
+        <p>大阪・京橋エリアで1000円でベロベロになれる居酒屋を探そう！</p>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="map-section">
+                <div id="map"></div>
+            </div>
+            
+            <div class="info-section">
+                <div id="izakaya-list" class="izakaya-list">
+                    <h2>🏮 居酒屋一覧</h2>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="居酒屋名で検索...">
+                    </div>
+                    <div id="izakaya-cards"></div>
+                </div>
+                
+                <div id="izakaya-detail" class="izakaya-detail" style="display: none;">
+                    <button id="back-btn" class="back-btn">← 一覧に戻る</button>
+                    <div id="detail-content"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
