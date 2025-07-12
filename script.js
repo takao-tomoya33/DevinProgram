@@ -1,128 +1,56 @@
-const izakayaData = [
-    {
-        id: 1,
-        name: "やきとり大吉 京橋店",
-        lat: 34.6952,
-        lng: 135.5267,
-        address: "大阪府大阪市都島区東野田町2-9-7",
-        rating: 4.2,
-        priceRange: "1000円〜",
-        description: "昭和レトロな雰囲気の焼鳥屋。1000円で生ビール3杯＋焼鳥5本のセットが人気！",
-        menu: [
-            {
-                name: "ベロベロセット",
-                price: "1000円",
-                description: "生ビール3杯＋焼鳥5本（もも、ねぎま、つくね、レバー、皮）"
-            },
-            {
-                name: "酎ハイ飲み放題",
-                price: "980円",
-                description: "60分間酎ハイ飲み放題（レモン、ウメ、カルピス）"
-            }
-        ]
-    },
-    {
-        id: 2,
-        name: "立ち飲み 京橋酒場",
-        lat: 34.6948,
-        lng: 135.5275,
-        address: "大阪府大阪市都島区片町1-5-13",
-        rating: 4.0,
-        priceRange: "800円〜",
-        description: "立ち飲みスタイルの気軽な酒場。ハイボール5杯1000円が名物！",
-        menu: [
-            {
-                name: "ハイボール5杯セット",
-                price: "1000円",
-                description: "角ハイボール5杯＋お通し付き"
-            },
-            {
-                name: "日本酒3合セット",
-                price: "950円",
-                description: "地酒3合＋おつまみ盛り合わせ"
-            }
-        ]
-    },
-    {
-        id: 3,
-        name: "大衆酒場 京橋横丁",
-        lat: 34.6945,
-        lng: 135.5280,
-        address: "大阪府大阪市都島区片町2-3-8",
-        rating: 4.3,
-        priceRange: "900円〜",
-        description: "昔ながらの大衆酒場。焼酎ボトル1本1000円で飲み放題！",
-        menu: [
-            {
-                name: "焼酎ボトル飲み放題",
-                price: "1000円",
-                description: "芋焼酎または麦焼酎1本＋氷・水・お湯付き"
-            },
-            {
-                name: "生ビール＋餃子セット",
-                price: "980円",
-                description: "生ビール中ジョッキ3杯＋餃子1人前"
-            }
-        ]
-    },
-    {
-        id: 4,
-        name: "ホルモン酒場 京橋本店",
-        lat: 34.6955,
-        lng: 135.5285,
-        address: "大阪府大阪市都島区東野田町1-8-15",
-        rating: 4.1,
-        priceRange: "1000円〜",
-        description: "新鮮なホルモンが自慢の酒場。1000円でホルモン＋ビールのセットが楽しめる！",
-        menu: [
-            {
-                name: "ホルモン＋ビールセット",
-                price: "1000円",
-                description: "新鮮ホルモン盛り合わせ＋生ビール2杯"
-            },
-            {
-                name: "レモンサワー飲み放題",
-                price: "990円",
-                description: "90分間レモンサワー飲み放題"
-            }
-        ]
-    },
-    {
-        id: 5,
-        name: "串カツ居酒屋 だるま",
-        lat: 34.6940,
-        lng: 135.5270,
-        address: "大阪府大阪市都島区片町1-2-20",
-        rating: 4.4,
-        priceRange: "950円〜",
-        description: "大阪名物串カツの老舗。1000円で串カツ10本＋ビールのセットが人気！",
-        menu: [
-            {
-                name: "串カツ10本＋ビールセット",
-                price: "1000円",
-                description: "串カツ10本（豚、牛、エビ、野菜など）＋生ビール中1杯"
-            },
-            {
-                name: "ハイボール飲み放題",
-                price: "950円",
-                description: "60分間ハイボール飲み放題＋お通し"
-            }
-        ]
-    }
-];
+const API_BASE_URL = 'https://app-quvmpjvy.fly.dev';
+
+let izakayaData = [];
+let isLoading = false;
 
 let map;
 let markers = [];
 let selectedIzakaya = null;
 
-function initMap() {
-    const kyobashi = [34.6950, 135.5275];
-    
-    map = L.map('map').setView(kyobashi, 16);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+async function fetchIzakayaData() {
+    try {
+        isLoading = true;
+        showLoadingState();
+        
+        const response = await fetch(`${API_BASE_URL}/api/izakayas`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        izakayaData = data.izakayas || [];
+        
+        isLoading = false;
+        hideLoadingState();
+        
+        return izakayaData;
+    } catch (error) {
+        console.error('Failed to fetch izakaya data:', error);
+        isLoading = false;
+        hideLoadingState();
+        showErrorState();
+        return [];
+    }
+}
+
+function showLoadingState() {
+    const container = document.getElementById('izakaya-cards');
+    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">🍻 居酒屋データを読み込み中...</div>';
+}
+
+function hideLoadingState() {
+}
+
+function showErrorState() {
+    const container = document.getElementById('izakaya-cards');
+    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff6b6b;">❌ データの読み込みに失敗しました。しばらくしてから再度お試しください。</div>';
+}
+
+function addMarkersToMap() {
+    markers.forEach(({ marker }) => {
+        map.removeLayer(marker);
+    });
+    markers = [];
 
     izakayaData.forEach(izakaya => {
         const customIcon = L.divIcon({
@@ -142,7 +70,19 @@ function initMap() {
 
         markers.push({ marker, izakaya });
     });
+}
 
+async function initMap() {
+    const kyobashi = [34.6950, 135.5275];
+    
+    map = L.map('map').setView(kyobashi, 16);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    await fetchIzakayaData();
+    addMarkersToMap();
     displayIzakayaList();
 }
 
